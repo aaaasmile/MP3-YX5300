@@ -4,3 +4,7 @@
 .vscode/launch.json
 .vscode/ipch
 data/*
+doc/YX5300-24SS Datasheet V1.0.pdf
+doc/ESP_WebServerAP.zip
+doc/ESP_WebServerAP/*.*
+

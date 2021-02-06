@@ -108,6 +108,7 @@ String decodeMP3Answer()
   String decodedMP3Answer = "";
 
   decodedMP3Answer += sanswer();
+  Serial.println("[ANT]"+decodedMP3Answer);
 
   switch (ansbuf[3])
   {
@@ -156,6 +157,8 @@ String decodeMP3Answer()
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("Setup serial communication");
+
   mp3.begin(9600);
   //send the command [Select device] first. Serial MP3 Player
   // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
@@ -164,14 +167,26 @@ void setup()
 }
 
 int g_first = true;
+int g_currFolder = 0x1;
+int g_lastFolder = 0x2;
+
 void loop()
 {
   if (g_first)
   {
     Serial.println("Wakeup, play the first song");
+    //sendCommand(CMD_QUERY_FLDR_COUNT, 0x00, 0x00); // how many folder?
+    //delay(1000);
+    //sendCommand(CMD_SHUFFLE_PLAY, 0x00, 0x00); // random play
+    //delay(1000);
     // 7E FF 06 0F 00 01 01 EF => Play the song with the directory:/01/001xxx.mp3
-    sendCommand(CMD_PLAY_FOLDER_FILE, 0x01, 0x03);
-    delay(3000);
+    //sendCommand(CMD_PLAY_FOLDER_FILE, 0x01, 0x03);
+    //sendCommand(CMD_FOLDER_CYCLE, 0x01, 0x00);
+    //sendCommand(CMD_PLAY_W_INDEX, 0x00, 0x1E); // play a single file and stop
+    //delay(3000);
+    sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
+
+    delay(100);
     g_first = false;
   }
   if (mp3.available())
