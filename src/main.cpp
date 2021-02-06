@@ -19,8 +19,9 @@ int g_currFolder = 0x1;
 int g_lastFolder = 0x2;
 int g_currSong = 0x01;
 static int8_t g_maxSongs[3] = {0, 25, 14};
+String g_lastMp3Answ;
+//#define DEBUG;
 
-/************ Command byte **************************/
 #define CMD_NEXT_SONG 0X01 // Play next song.
 #define CMD_PREV_SONG 0X02 // Play previous song.
 #define CMD_PLAY_W_INDEX 0X03
@@ -54,7 +55,6 @@ static int8_t g_maxSongs[3] = {0, 25, 14};
 #define CMD_QUERY_TOT_TRACKS 0x48
 #define CMD_QUERY_FLDR_COUNT 0x4f
 
-/************ Opitons **************************/
 #define DEV_TF 0X02
 
 String sbyte2hex(uint8_t b)
@@ -81,13 +81,19 @@ void sendCommand(byte command, byte dat1, byte dat2)
   Send_buf[5] = dat1;    // datah
   Send_buf[6] = dat2;    // datal
   Send_buf[7] = 0xEF;    //
+#ifdef DEBUG
   Serial.print("Sending: ");
+#endif
   for (uint8_t i = 0; i < 8; i++)
   {
     mp3.write(Send_buf[i]);
-    //Serial.print(sbyte2hex(Send_buf[i]));
+#ifdef DEBUG
+    Serial.print(sbyte2hex(Send_buf[i]));
+#endif
   }
+#ifdef DEBUG
   Serial.println();
+#endif
 }
 
 String sanswer(void)
@@ -119,7 +125,9 @@ String decodeMP3Answer()
   String decodedMP3Answer = "";
 
   decodedMP3Answer += sanswer();
+#ifdef DEBUG
   Serial.println("[ANT]" + decodedMP3Answer);
+#endif
 
   switch (ansbuf[3])
   {
@@ -174,19 +182,25 @@ void handleWebRequest(WiFiClient &client)
   }
   if (millis() > ultimeout)
   {
+#ifdef DEBUG
     Serial.println("client connection time-out!");
+#endif
     return;
   }
 
   // Read the first line of the request
   String sRequest = client.readStringUntil('\r');
-  //Serial.println(sRequest);
+#ifdef DEBUG
+  Serial.println(sRequest);
+#endif
   client.flush();
 
   // stop client, if request is empty
   if (sRequest == "")
   {
+#ifdef DEBUG
     Serial.println("empty request! - stopping client");
+#endif
     client.stop();
     return;
   }
@@ -226,7 +240,9 @@ void handleWebRequest(WiFiClient &client)
     if (iEqu >= 0)
     {
       sCmd = sParam.substring(iEqu + 1, sParam.length());
+#ifdef DEBUG
       Serial.println(sCmd);
+#endif
     }
   }
 
@@ -324,7 +340,7 @@ void handleWebRequest(WiFiClient &client)
         sendCommand(CMD_VOLUME_DOWN, 0x00, 0x00);
       }
     }
-    sResponse += "<p>Info: "; 
+    sResponse += "<p>I: " + g_lastMp3Answ + " - "; 
     sResponse += g_currFolder;
     sResponse += " - ";
     sResponse += g_currSong;
@@ -351,10 +367,11 @@ void handleWebRequest(WiFiClient &client)
 
 void setup()
 {
+#ifdef DEBUG
   Serial.begin(9600);
   delay(1);
   Serial.println("Setup serial communication");
-
+#endif
   mp3.begin(9600);
   delay(500);
   // //send the command [Select device] first. Serial MP3 Player
@@ -366,15 +383,19 @@ void setup()
   WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid, password);
   server.begin();
+#ifdef DEBUG
   Serial.print("Start AP: ");
   Serial.println(ssid);
+#endif
 }
 
 void loop()
 {
   if (g_first)
   {
+#ifdef DEBUG
     Serial.println("Wakeup, play the first song");
+#endif
     sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder
     delay(100);
     g_first = false;
@@ -382,7 +403,10 @@ void loop()
 
   if (mp3.available())
   {
-    Serial.println(decodeMP3Answer()); // never triggered?
+    g_lastMp3Answ = decodeMP3Answer();
+#ifdef DEBUG
+    Serial.println(g_lastMp3Answ); // never triggered?
+#endif
   }
   delay(100);
 
@@ -392,6 +416,8 @@ void loop()
   {
     return;
   }
+#ifdef DEBUG
   Serial.println("new client");
+#endif
   handleWebRequest(client);
 }
