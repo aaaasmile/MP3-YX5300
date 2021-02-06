@@ -249,7 +249,7 @@ void handleWebRequest(WiFiClient &client)
     sResponse = "<html><head><title>Mp3 Player</title></head><body>";
     sResponse += "<font color=\"#000000\"><body bgcolor=\"#d0d0f0\">";
     sResponse += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">";
-    sResponse += "<h1>MP3 Player Access Point</h1>";
+    sResponse += "<h1>MP3 Player AP</h1>";
     sResponse += "<FONT SIZE=+1>";
     sResponse += "<p>Next Song <a href=\"?cmd=Next\"><button>Next Song</button></a></p>";
     sResponse += "<p>Prev Song <a href=\"?cmd=Prev\"><button>Prev Song</button></a></p></p>";
@@ -257,7 +257,9 @@ void handleWebRequest(WiFiClient &client)
     sResponse += "<p>Next Folder <a href=\"?cmd=FolderNext\"><button>Next Folder</button></a></p>";
     sResponse += "<p>Prev Folder <a href=\"?cmd=FolderPrev\"><button>Prev Folder</button></a></p>";
     sResponse += "<br/>";
-    sResponse += "<p>Cycle <a href=\"?cmd=Cycle\"><button>Cycle</button></a></p>";
+    sResponse += "<p>Cycle <a href=\"?cmd=Cycle\"><button>Cycle</button></a>";
+    sResponse += "<a href=\"?cmd=VolumeUp\"><button>Up</button></a>";
+    sResponse += "<a href=\"?cmd=VolumeDown\"><button>Down</button></a> </p>";
 
     //////////////////////
     // react on parameters
@@ -310,6 +312,16 @@ void handleWebRequest(WiFiClient &client)
           g_currSong = 1;
         }
         sendCommand(CMD_SNG_CYCL_PLAY, g_currFolder, g_currSong);
+        delay(500);
+        sendCommand(CMD_PLAY, 0x00, 0x00);
+      }
+      else if (sCmd.indexOf("VolumeUp") == 0)
+      {
+        sendCommand(CMD_VOLUME_UP, 0x00, 0x00);
+      }
+      else if (sCmd.indexOf("VolumeDown") == 0)
+      {
+        sendCommand(CMD_VOLUME_DOWN, 0x00, 0x00);
       }
     }
     sResponse += "<p>Info: "; 
