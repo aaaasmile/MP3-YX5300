@@ -6,13 +6,13 @@ Parameterbefehl abfragen
 Serieller Debug-Assistent zum Testen Befehl 
 gesendet [mit Parität] Befehl               gesendet [ohne Parität]         Bemerkungen
 [Weiter] 
-7E FF 06 01 00 00 00 FE FA EF                       7E FF 06 01 00 00 00 EF
+7E FF 06 01 00 00 00 FE FA EF           7E FF 06 01 00 00 00 EF
 [Zurück] 
-7E FF 06 02 00 00 00 FE F9 EF                       7E FF 06 02 00 00 00 00 EF      
+7E FF 06 02 00 00 00 FE F9 EF           7E FF 06 02 00 00 00 00 EF      
 [zugewiesene Spur]  
-7E FF 06 03 00 00 01 FE F7 EF                       7E FF 06 03 00 00 01 EF Bestimmen Sie den ersten zu spielenden Song
-7E FF 06 03 00 00 02 FE F6 EF                       7E FF 06 03 00 00 02 EF Geben Sie die zweite Spur an
-7E FF 06 03 00 00 0A FE EE EF                       7E FF 06 03 00 00 0A EF Legen Sie den zehnten Song fest
+7E FF 06 03 00 00 01 FE F7 EF           7E FF 06 03 00 00 01 EF Bestimmen Sie den ersten zu spielenden Song
+7E FF 06 03 00 00 02 FE F6 EF           7E FF 06 03 00 00 02 EF Geben Sie die zweite Spur an
+7E FF 06 03 00 00 0A FE EE EF           7E FF 06 03 00 00 0A EF Legen Sie den zehnten Song fest
 Volumen plus 
 7E FF 06 04 00 00 00 FE F7 EF           7E FF 06 04 00 00 00 EF
 Volumen minus 
@@ -22,49 +22,49 @@ Volumen minus
 [Assign EQ] 
 7E FF 06 07 00 00 01                    FE F3 EF 7E FF 06 07 00 00 01 EF Reserviert
 [Loop Track]
-7E FF 06 08 00 00 01 FE F2 EF                       7E FF 06 08 00 00 01 EF Schleife der ersten Spur
-7E FF 06 08 00 00 02 FE F1 EF                       7E FF 06 08 00 00 02 EF Schleife der zweiten Spur
-7E FF 06 08 00 00 0A FE E9 EF                       7E FF 06 08 00 00 0A EF Schleife des zehnten Songs
-7E FF 06 08 00 01 01 FE F1 EF                       7E FF 06 08 00 01 01 EF Schleife der ersten Spur von FLASH's FOLDER1
-7E FF 06 08 00 02 01 FE F0 EF                       7E FF 06 08 00 02 01 EF Schleife des ersten Songs von FLASH's FOLDER2
+7E FF 06 08 00 00 01 FE F2 EF           7E FF 06 08 00 00 01 EF Schleife der ersten Spur
+7E FF 06 08 00 00 02 FE F1 EF           7E FF 06 08 00 00 02 EF Schleife der zweiten Spur
+7E FF 06 08 00 00 0A FE E9 EF           7E FF 06 08 00 00 0A EF Schleife des zehnten Songs
+7E FF 06 08 00 01 01 FE F1 EF           7E FF 06 08 00 01 01 EF Schleife der ersten Spur von FLASH's FOLDER1
+7E FF 06 08 00 02 01 FE F0 EF           7E FF 06 08 00 02 01 EF Schleife des ersten Songs von FLASH's FOLDER2
 
 [Wiedergabegerät angeben]
-7E FF 06 09 00 00 01 FE F1 EF               7E FF 06 09 00 00 01 EF Bezeichnetes Playback UDISK
-7E FF 06 09 00 00 02 FE F0 EF               7E FF 06 09 00 00 02 EF Belegt mit Play TF
-7E FF 06 09 00 00 03 FE EF EF               7E FF 06 09 00 00 03 EF Bezeichnet für FLASH-Wiedergabe
+7E FF 06 09 00 00 01 FE F1 EF           7E FF 06 09 00 00 01 EF Bezeichnetes Playback UDISK
+7E FF 06 09 00 00 02 FE F0 EF           7E FF 06 09 00 00 02 EF Belegt mit Play TF
+7E FF 06 09 00 00 03 FE EF EF           7E FF 06 09 00 00 03 EF Bezeichnet für FLASH-Wiedergabe
 
 [Schlafmodus aktivieren] 
-7E FF 06 0A 00 00 00 FE F1 EF               7E FF 06 0A 00 00 00 00 EF
+7E FF 06 0A 00 00 00 FE F1 EF           7E FF 06 0A 00 00 00 00 EF
 [WAKE UP SLEEP] 
-7E FF 06 0B 00 00 00 FE F0 EF               7E FF 06 0B 00 00 00 EF
+7E FF 06 0B 00 00 00 FE F0 EF           7E FF 06 0B 00 00 00 EF
 [Chip Reset] 
-7E FF 06 0C 00 00 00 FE EF EF               7E FF 06 0C 00 00 00 00 EF
+7E FF 06 0C 00 00 00 FE EF EF           7E FF 06 0C 00 00 00 00 EF
 [Play] 
-7E FF 06 0D 00 00 00 FE EE EF               7E FF 06 0D 00 00 00 00 EF
+7E FF 06 0D 00 00 00 FE EE EF           7E FF 06 0D 00 00 00 00 EF
 [Pause] 
-7E FF 06 0E 00 00 00 FE ED EF               7E FF 06 0E 00 00 00 00 EF
+7E FF 06 0E 00 00 00 FE ED EF           7E FF 06 0E 00 00 00 00 EF
 [Dateiname des Ordners angeben] 
-7E FF 06 0F 00 01 01 FE EA EF               7E FF 06 0F 00 01 01 EF Ordner "01", Spur "001"
-7E FF 06 0F 00 01 02 FE E9 EF               7E FF 06 0F 00 01 02 EF Ordner "01", Spur "002" 
+7E FF 06 0F 00 01 01 FE EA EF           7E FF 06 0F 00 01 01 EF Ordner "01", Spur "001"
+7E FF 06 0F 00 01 02 FE E9 EF           7E FF 06 0F 00 01 02 EF Ordner "01", Spur "002" 
 
 Wiedergabe stoppen 
-7E FF 06 16 00 00 00 FE E5 EF               7E FF 06 16 00 00 00 EF Software-Dekodierung stoppen
+7E FF 06 16 00 00 00 FE E5 EF           7E FF 06 16 00 00 00 EF Software-Dekodierung stoppen
 
 Festgelegte Ordnerschleife 
-7E FF 06 17 00 02 00 FE E2 EF               7E FF 06 17 00 02 00 EF Festgelegte Ordnerschleife 02
-7E FF 06 17 00 01 00 FE E3 EF               7E FF 06 17 00 01 00 EF Legen Sie den Ordner 01 für die Schleife fest
+7E FF 06 17 00 02 00 FE E2 EF           7E FF 06 17 00 02 00 EF Festgelegte Ordnerschleife 02
+7E FF 06 17 00 01 00 FE E3 EF           7E FF 06 17 00 01 00 EF Legen Sie den Ordner 01 für die Schleife fest
 
 Zufällige Wiedergabe 
-7E FF 06 18 00 00 00 FE E3 EF               7E FF 06 18 00 00 00 EF Zufällige Wiedergabe
+7E FF 06 18 00 00 00 FE E3 EF           7E FF 06 18 00 00 00 EF Zufällige Wiedergabe
 
 Single Loop Play 
-7E FF 06 19 00 00 00 FE E2 EF               7E FF 06 19 00 00 00 EF Single Loop Play On
-7E FF 06 19 00 00 01 FE E1 EF               7E FF 06 19 00 00 01 EF Einzelschleifenwiedergabe aus
+7E FF 06 19 00 00 00 FE E2 EF           7E FF 06 19 00 00 00 EF Single Loop Play On
+7E FF 06 19 00 00 01 FE E1 EF           7E FF 06 19 00 00 01 EF Einzelschleifenwiedergabe aus
 
 Wiedergabe mit Lautstärke 
-7E FF 06 22 00 1E 01 FE BA EF               7E FF 06 22 00 1E 01 EF 30 Stufe Lautstärke spielen 1.
-7E FF 06 22 00 0F 01 FE C9 EF               7E FF 06 22 00 0F 01 EF 15-Stufen-Lautstärke spielen 1.
-7E FF 06 22 00 0F 02 FE C8 EF               7E FF 06 22 00 0F 02 EF 15-Stufen-Lautstärke spielen 2.
+7E FF 06 22 00 1E 01 FE BA EF           7E FF 06 22 00 1E 01 EF 30 Stufe Lautstärke spielen 1.
+7E FF 06 22 00 0F 01 FE C9 EF           7E FF 06 22 00 0F 01 EF 15-Stufen-Lautstärke spielen 1.
+7E FF 06 22 00 0F 02 FE C8 EF           7E FF 06 22 00 0F 02 EF 15-Stufen-Lautstärke spielen 2.
 
 9.2 Befehl Parameter abfragen
 Serieller Debug-Assistent für Test Befehl gesendet 

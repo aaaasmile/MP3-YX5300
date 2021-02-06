@@ -18,5 +18,14 @@ I pin addetti alla comunicazione seriale dell'ESP8266 sono D9 e D10, marcati com
 Il collegamento con YX5300 va fatto cross. Completa il collegamnto del modulo con Vcc e Gnd
 dell'ESP8266. In pratica, solo i primi 4 pin dell'ESP8266 sono collegati.
 
+## Problemi
+1)Non riesco a ricevere le risposte del player, sembrta che vengano mandate nel 
+monitor anziché nel loop().
+2)Non riesco a creare una playlist continua come voglio. Se cambio il 
+successivo file, esso viene fatto andare, ma poi finisce e bisogna premere
+ancora il tasto next.
+3) Il comando List non fa nulla se non lanciare play.
+
+
 
 
