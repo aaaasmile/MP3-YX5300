@@ -115,7 +115,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
         sResponse += "<p>Next Folder <a href=\"?cmd=FolderNext\"><button>Next Folder</button></a></p>";
         sResponse += "<p>Prev Folder <a href=\"?cmd=FolderPrev\"><button>Prev Folder</button></a></p>";
         sResponse += "<br/>";
-        sResponse += "<p>Cycle <a href=\"?cmd=Cycle\"><button>Cycle</button></a>";
+        sResponse += "<p>Shuffle <a href=\"?cmd=Rand\"><button>Rand</button></a>";
         sResponse += "<a href=\"?cmd=VolumeUp\"><button>Up</button></a>";
         sResponse += "<a href=\"?cmd=VolumeDown\"><button>Down</button></a> </p>";
 
@@ -162,16 +162,17 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 }
                 sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
             }
-            else if (sCmd.indexOf("Cycle") == 0)
+            else if (sCmd.indexOf("Rand") == 0)
             {
-                g_currSong++;
-                if (g_maxSongs[g_currFolder] > g_currSong)
-                {
-                    g_currSong = 1;
-                }
-                sendCommand(CMD_SNG_CYCL_PLAY, g_currFolder, g_currSong);
-                delay(500);
-                sendCommand(CMD_PLAY, 0x00, 0x00);
+                // g_currSong++;
+                // if (g_maxSongs[g_currFolder] > g_currSong)
+                // {
+                //     g_currSong = 1;
+                // }
+                //sendCommand(CMD_SNG_CYCL_PLAY, g_currFolder, g_currSong);
+                //delay(500);
+                //sendCommand(CMD_PLAY, 0x00, 0x00);
+                sendCommand(CMD_SHUFFLE_PLAY, 0x00, 0x00);
             }
             else if (sCmd.indexOf("VolumeUp") == 0)
             {
