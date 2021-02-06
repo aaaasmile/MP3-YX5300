@@ -11,12 +11,14 @@ static uint8_t ansbuf[10] = {0};
 SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
 
 const char *ssid = "MP-AP";
-const char *password = "12345678";
+const char *password = "12345678"; // password length is important
 WiFiServer server(80);
 
 int g_first = true;
 int g_currFolder = 0x1;
 int g_lastFolder = 0x2;
+int g_currSong = 0x01;
+static int8_t g_maxSongs[3] = {0, 25, 14};
 
 /************ Command byte **************************/
 #define CMD_NEXT_SONG 0X01 // Play next song.
@@ -83,7 +85,7 @@ void sendCommand(byte command, byte dat1, byte dat2)
   for (uint8_t i = 0; i < 8; i++)
   {
     mp3.write(Send_buf[i]);
-    Serial.print(sbyte2hex(Send_buf[i]));
+    //Serial.print(sbyte2hex(Send_buf[i]));
   }
   Serial.println();
 }
@@ -250,7 +252,12 @@ void handleWebRequest(WiFiClient &client)
     sResponse += "<h1>MP3 Player Access Point</h1>";
     sResponse += "<FONT SIZE=+1>";
     sResponse += "<p>Next Song <a href=\"?cmd=Next\"><button>Next Song</button></a></p>";
-    sResponse += "<p>Next Folder <a href=\"?cmd=NextFolder\"><button>Next Folder</button></a></p>";
+    sResponse += "<p>Prev Song <a href=\"?cmd=Prev\"><button>Prev Song</button></a></p></p>";
+    sResponse += "<br/>";
+    sResponse += "<p>Next Folder <a href=\"?cmd=FolderNext\"><button>Next Folder</button></a></p>";
+    sResponse += "<p>Prev Folder <a href=\"?cmd=FolderPrev\"><button>Prev Folder</button></a></p>";
+    sResponse += "<br/>";
+    sResponse += "<p>Cycle <a href=\"?cmd=Cycle\"><button>Cycle</button></a></p>";
 
     //////////////////////
     // react on parameters
@@ -259,31 +266,57 @@ void handleWebRequest(WiFiClient &client)
     {
       sResponse += "Command:" + sCmd + "<BR>";
 
-      if (sCmd.indexOf("Next") >= 0)
+      if (sCmd.indexOf("Next") == 0)
       {
+        g_currSong++;
+        if (g_currSong > g_maxSongs[g_currFolder])
+        {
+          g_currSong = 1;
+        }
         sendCommand(CMD_NEXT_SONG, 0x00, 0x00);
       }
-      else if (sCmd.indexOf("Prev") >= 0)
+      else if (sCmd.indexOf("Prev") == 0)
       {
+        g_currSong--;
+        if (g_currSong < 1)
+        {
+          g_currSong = g_maxSongs[g_currFolder];
+        }
         sendCommand(CMD_PREV_SONG, 0x00, 0x00);
       }
-      else if (sCmd.indexOf("PrevFolder") >= 0)
+      else if (sCmd.indexOf("FolderPrev") == 0)
       {
-        g_currFolder --;
-        if(g_currFolder < 1){
+        g_currFolder--;
+        if (g_currFolder < 1)
+        {
           g_currFolder = g_lastFolder;
         }
         sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
       }
-      else if (sCmd.indexOf("NextFolder") >= 0)
+      else if (sCmd.indexOf("FolderNext") == 0)
       {
-        g_currFolder ++;
-        if(g_currFolder > g_lastFolder){
+        g_currFolder++;
+        if (g_currFolder > g_lastFolder)
+        {
           g_currFolder = 1;
         }
         sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
       }
+      else if (sCmd.indexOf("Cycle") == 0)
+      {
+        g_currSong++;
+        if (g_maxSongs[g_currFolder] > g_currSong)
+        {
+          g_currSong = 1;
+        }
+        sendCommand(CMD_SNG_CYCL_PLAY, g_currFolder, g_currSong);
+      }
     }
+    sResponse += "<p>Info: "; 
+    sResponse += g_currFolder;
+    sResponse += " - ";
+    sResponse += g_currSong;
+    sResponse += "</p>";
 
     sResponse += "</body></html>";
 
@@ -310,12 +343,12 @@ void setup()
   delay(1);
   Serial.println("Setup serial communication");
 
-  // mp3.begin(9600);
-  // delay(1);
+  mp3.begin(9600);
+  delay(500);
   // //send the command [Select device] first. Serial MP3 Player
   // // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
-  // sendCommand(CMD_SEL_DEV, 0, DEV_TF);
-  // delay(500);
+  sendCommand(CMD_SEL_DEV, 0, DEV_TF);
+  delay(500);
 
   // AP mode
   WiFi.mode(WIFI_AP);
@@ -329,16 +362,17 @@ void loop()
 {
   if (g_first)
   {
-    Serial.println("Wakeup, play the first song"); 
-    //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
+    Serial.println("Wakeup, play the first song");
+    sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder
     delay(100);
     g_first = false;
   }
-  // if (mp3.available())
-  // {
-  //   Serial.println(decodeMP3Answer());
-  // }
-  // delay(100);
+
+  if (mp3.available())
+  {
+    Serial.println(decodeMP3Answer()); // never triggered?
+  }
+  delay(100);
 
   // Check if a client has connected
   WiFiClient client = server.available();
