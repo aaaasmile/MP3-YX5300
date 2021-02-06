@@ -2,8 +2,8 @@
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
 
-#define ESP8266_RX 3 //D9 Rx should connect to TX of the Serial MP3 Player module
-#define ESP8266_TX 1 //D10 Tx connect to RX of the module
+#define ESP8266_RX D9 //D9 Rx should connect to TX of the Serial MP3 Player module
+#define ESP8266_TX D10 //D10 Tx connect to RX of the module
 
 static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
