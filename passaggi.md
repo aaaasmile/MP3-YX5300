@@ -30,7 +30,14 @@ La comunicazione seriale disponibile sull esp8266 sembra esseere limitata
 ad una sola UART fullduplex, mentre sulla seconda solo in send.
 L'interfaccia seriale di programmazione di platformio sembra  usare Rx2 e Tx2
 sui pin D7 e D8. Ho provato a collegarli usando serial2, ma senza successo.
-Anzi ho piantato il sistema. Quindi non riesco a leggere le risposte del modulo
-YX5300.
+Anzi ho piantato il sistema. Quindi non riesco a leggere le risposte del modulo YX5300.
+Non vedo come possa funzionare con HardwareSerial e Serial2.
+
+## Soluzione comunicazione seriale
+Per farla andare in modo stabile, basta usare SoftwareSerial sui pin
+D5 e D6 come nell'espio di Arduino Nano e il gioco è fatto.
+Così si può avere l'interfaccia UART per la programmazione e il monitor,
+mentre per l'Mp3 si usano i GPIO con emulazione software.
+Il codice HardwareSerial lo rimuovo in quanto non può funzionare con Esp8266.
 
 
