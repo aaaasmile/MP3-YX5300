@@ -5,7 +5,7 @@
 #include "web.h"
 #include "commands.h"
 
-//#define DEBUG
+#define DEBUG
 
 #if USE_SOFTWARESERIAL
 #include <SoftwareSerial.h>
@@ -150,12 +150,14 @@ String decodeMP3Answer()
 void setup()
 {
 #ifdef DEBUG
-  Console.begin(115200);
-  delay(500);
+  Console.begin(57600);
+  delay(10);
   Console.println("Setup serial communication");
 #endif
-  mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL);
-  delay(500);
+  //mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL);
+  //mp3.begin(9600);
+  mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL, D10, false);
+  delay(10);
   // //send the command [Select device] first. Serial MP3 Player
   // // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
