@@ -67,18 +67,33 @@ void sendCommand(byte command, byte dat1, byte dat2)
 
 String sanswer(void)
 {
-  uint8_t i, j = 0;
+  uint8_t i = 0;
+  uint8_t j = 0;
   String mp3answer = "";
 
-  // Get only 10 Bytes
+  bool write = false;
   while (j < 3 && i < 10)
   {
     while (mp3.available() && (i < 10))
     {
       uint8_t b = mp3.read();
-      ansbuf[i] = b;
-      i++;
-      mp3answer += sbyte2hex(b);
+      if (i == 0 && b == 0x7e)
+      {
+        write = true;
+      }
+      if (write)
+      {
+        ansbuf[i] = b;
+        i++;
+        mp3answer += sbyte2hex(b);
+      }
+      else
+      {
+#ifdef DEBUG
+        Console.print("Ignore byte");
+        Console.println(b);
+#endif
+      }
     }
     delay(4);
     j++;
@@ -104,8 +119,6 @@ String decodeMP3Answer()
 
   case 0x3D:
     decodedMP3Answer += " -> Completed play num " + String(ansbuf[6], DEC);
-    //sendCommand(CMD_NEXT_SONG);
-    //sendCommand(CMD_PLAYING_N); // ask for the number of file is playing
     break;
 
   case 0x40:
@@ -145,7 +158,7 @@ void setup()
 #ifdef DEBUG
   Console.begin(115200);
   delay(10);
-  Console.println("Setup serial communication");
+  Console.println("Setup serial communication, send seldev");
 #endif
   //mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL);
   mp3.begin(9600);
@@ -162,26 +175,30 @@ void setup()
 
 void loop()
 {
+  if (mp3.available())
+  {
+    g_lastMp3Answ = decodeMP3Answer();
+#ifdef DEBUG
+    Console.println(g_lastMp3Answ);
+#endif
+  }
+  delay(100);
+
   if (g_first)
   {
 #ifdef DEBUG
-    Console.println("Wakeup, play the first song");
+    Console.println("Wakeup");
 #endif
-    sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder
+    //sendCommand(CMD_QUERY_FLDR_TRACKS, g_currFolder, 0x00); // works with antw 0x41?
+    //sendCommand(CMD_QUERY_TOT_TRACKS, 0, 0);
+    //sendCommand(CMD_QUERY_FLDR_COUNT, 0, 0);
+    //sendCommand(CMD_QUERY_STATUS, 0, 0);
+    //delay(500);
+    //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder (OK)
+    sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, 0x04); // start playing the song with index
     delay(100);
     g_first = false;
   }
-
-  if (mp3.available())
-  {
-    g_lastMp3Answ = "datav: ";
-    if (g_lastMp3Answ.length() > 256)
-    {
-      g_lastMp3Answ = "";
-    }
-    g_lastMp3Answ += decodeMP3Answer();
-  }
-  delay(100);
 
   apServer.Update(g_lastMp3Answ);
 }
