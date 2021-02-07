@@ -9,10 +9,11 @@
 #define USE_SOFTWARESERIAL 1
 
 #if USE_SOFTWARESERIAL
-#include <SoftwareSerial.h>
-#define ESP8266_RX D9  // Rx2 should connect to TX of the Serial MP3 Player module
-#define ESP8266_TX D10 // Tx2 connect to RX of the module
-SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
+// #include <SoftwareSerial.h>
+// #define ESP8266_RX D9  // Rx2 should connect to TX of the Serial MP3 Player module
+// #define ESP8266_TX D10 // Tx2 connect to RX of the module
+// SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
+#define mp3 Serial
 #ifdef DEBUG
 #define Console Serial // command processor input/output stream
 #endif

@@ -26,6 +26,11 @@ successivo file, esso viene fatto andare, ma poi finisce e bisogna premere
 ancora il tasto next.
 3) Il comando List non fa nulla se non lanciare play.
 
-
+La comunicazione seriale disponibile sull esp8266 sembra esseere limitata
+ad una sola UART fullduplex, mentre sulla seconda solo in send.
+L'interfaccia seriale di programmazione di platformio sembra  usare Rx2 e Tx2
+sui pin D7 e D8. Ho provato a collegarli usando serial2, ma senza successo.
+Anzi ho piantato il sistema. Quindi non riesco a leggere le risposte del modulo
+YX5300.
 
 
