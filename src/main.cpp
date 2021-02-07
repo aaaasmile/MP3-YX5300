@@ -1,18 +1,30 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+
 #include <ESP8266WiFi.h>
 
 #include "web.h"
 #include "commands.h"
 
-#define ESP8266_RX D9 //D9 Rx should connect to TX of the Serial MP3 Player module
+//#define DEBUG
+
+#if USE_SOFTWARESERIAL
+#include <SoftwareSerial.h>
+#define ESP8266_RX D9  //D9 Rx should connect to TX of the Serial MP3 Player module
 #define ESP8266_TX D10 //D10 Tx connect to RX of the module
+SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
+#define Console Serial           // command processor input/output stream
+#else
+#include "HardwareSerial.h"
+HardwareSerial Serial2(2);
+#define mp3 Serial2  // Native serial port - change to suit the application
+#define Console   Serial   // command processor input/output stream
+
+#endif
 
 static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
 extern int g_currFolder;
 
-SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
 MyWebServer apServer;
 
 int g_first = true;
@@ -44,17 +56,17 @@ void sendCommand(byte command, byte dat1, byte dat2)
   Send_buf[6] = dat2;    // datal
   Send_buf[7] = 0xEF;    //
 #ifdef DEBUG
-  Serial.print("Sending: ");
+  Console.print("Sending: ");
 #endif
   for (uint8_t i = 0; i < 8; i++)
   {
     mp3.write(Send_buf[i]);
 #ifdef DEBUG
-    Serial.print(sbyte2hex(Send_buf[i]));
+    Console.print(sbyte2hex(Send_buf[i]));
 #endif
   }
 #ifdef DEBUG
-  Serial.println();
+  Console.println();
 #endif
 }
 
@@ -88,7 +100,7 @@ String decodeMP3Answer()
 
   decodedMP3Answer += sanswer();
 #ifdef DEBUG
-  Serial.println("[ANT]" + decodedMP3Answer);
+  Console.println("[ANT]" + decodedMP3Answer);
 #endif
 
   switch (ansbuf[3])
@@ -138,11 +150,11 @@ String decodeMP3Answer()
 void setup()
 {
 #ifdef DEBUG
-  Serial.begin(9600);
-  delay(1);
-  Serial.println("Setup serial communication");
+  Console.begin(115200);
+  delay(500);
+  Console.println("Setup serial communication");
 #endif
-  mp3.begin(9600);
+  mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL);
   delay(500);
   // //send the command [Select device] first. Serial MP3 Player
   // // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
@@ -156,18 +168,25 @@ void loop()
   if (g_first)
   {
 #ifdef DEBUG
-    Serial.println("Wakeup, play the first song");
+    Console.println("Wakeup, play the first song");
 #endif
     sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder
     delay(100);
     g_first = false;
   }
 
+  // Console.println("Check if mp3 is available");
+  // while (!mp3.available());
+  // Console.println("Mp3 is now available");
+
   if (mp3.available())
   {
-    g_lastMp3Answ = decodeMP3Answer();// never triggered?
 #ifdef DEBUG
-    Serial.println(g_lastMp3Answ); 
+    Console.println("Data ara available on mp3 uart");
+#endif
+    g_lastMp3Answ = decodeMP3Answer(); // never triggered?
+#ifdef DEBUG
+    Console.println(g_lastMp3Answ);
 #endif
   }
   delay(100);

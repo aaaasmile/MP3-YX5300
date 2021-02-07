@@ -25,7 +25,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
     if (millis() > ultimeout)
     {
 #ifdef DEBUG
-        Serial.println("client connection time-out!");
+        Console.println("client connection time-out!");
 #endif
         return;
     }
@@ -33,7 +33,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
     // Read the first line of the request
     String sRequest = client.readStringUntil('\r');
 #ifdef DEBUG
-    Serial.println(sRequest);
+    Console.println(sRequest);
 #endif
     client.flush();
 
@@ -41,7 +41,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
     if (sRequest == "")
     {
 #ifdef DEBUG
-        Serial.println("empty request! - stopping client");
+        Console.println("empty request! - stopping client");
 #endif
         client.stop();
         return;
@@ -83,7 +83,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
         {
             sCmd = sParam.substring(iEqu + 1, sParam.length());
 #ifdef DEBUG
-            Serial.println(sCmd);
+            Console.println(sCmd);
 #endif
         }
     }
@@ -223,8 +223,8 @@ void MyWebServer::Setup()
     WiFi.softAP(ssid, password);
     server.begin();
 #ifdef DEBUG
-    Serial.print("Start AP: ");
-    Serial.println(ssid);
+    Console.print("Start AP: ");
+    Console.println(ssid);
 #endif
 }
 
@@ -237,7 +237,7 @@ void MyWebServer::Update(String lastMp3Answ)
         return;
     }
 #ifdef DEBUG
-    Serial.println("new client");
+    Console.println("new client");
 #endif
     handleWebRequest(client, lastMp3Answ);
 }
