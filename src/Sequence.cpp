@@ -33,6 +33,7 @@ void Sequence::CreateSeq(unsigned long seed, int num)
     {
         // Pick a remaining element…
         i = random(m); //intervall [0..m)
+        m --;
         // And swap it with the current element.
         t = _seq[m];
         _seq[m] = _seq[i];

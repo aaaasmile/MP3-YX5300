@@ -240,7 +240,6 @@ void loop()
     sequence.CreateSeq(ll, g_maxSongs[g_currFolder]);
 #ifdef DEBUG
     Console.println("Time to start to play the folder");
-    Console.println(ll);
 #endif
     play_next = true;
   }
