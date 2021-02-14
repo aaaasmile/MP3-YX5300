@@ -1,7 +1,9 @@
 #include <Arduino.h>
+#include <ets_sys.h>
+#include "osapi.h"
 
 #include <ESP8266WiFi.h>
-
+#include <stdint.h>
 #include "web.h"
 #include "commands.h"
 
@@ -107,8 +109,11 @@ String decodeMP3Answer()
   String decodedMP3Answer = "";
 
   decodedMP3Answer += sanswer();
+  unsigned long ll = micros();
+  
 #ifdef DEBUG
   Console.println("[ANT]" + decodedMP3Answer);
+  Console.println(ll);
 #endif
 
   switch (ansbuf[3])
@@ -153,6 +158,34 @@ String decodeMP3Answer()
   return decodedMP3Answer;
 }
 
+byte g_sample = 0;
+boolean g_sample_waiting = false;
+byte g_current_bit = 0;
+byte g_result = 0;
+
+// Rotate bits to the left
+// https://en.wikipedia.org/wiki/Circular_shift#Implementing_circular_shifts
+byte rotl(const byte value, int shift) {
+  if ((shift &= sizeof(value)*8 - 1) == 0)
+    return value;
+  return (value << shift) | (value >> (sizeof(value)*8 - shift));
+}
+
+void wdtSetup() {
+  // cli();
+  // MCUSR = 0;
+  
+  // /* Start timed sequence */
+  // WDTCSR |= _BV(WDCE) | _BV(WDE);
+
+  // /* Put WDT into interrupt mode */
+  // /* Set shortest prescaler(time-out) value = 2048 cycles (~16 ms) */
+  // WDTCSR = _BV(WDIE);
+
+  // sei();
+  //ESP.wdtFeed(); // reset watchdog
+}
+
 void setup()
 {
 #ifdef DEBUG
@@ -171,10 +204,25 @@ void setup()
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
   delay(500);
   apServer.Setup();
+  wdtSetup();
 }
 
 void loop()
 {
+  if (g_sample_waiting) {
+    g_sample_waiting = false;
+
+    g_result = rotl(g_result, 1); // Spread randomness around
+    g_result ^= g_sample; // XOR preserves randomness
+
+    g_current_bit++;
+    if (g_current_bit > 7)
+    {
+      g_current_bit = 0;
+      Console.println(g_result); // raw binary
+    }
+  }
+
   if (mp3.available())
   {
     g_lastMp3Answ = decodeMP3Answer();
