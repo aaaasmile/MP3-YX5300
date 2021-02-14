@@ -39,12 +39,12 @@
 
 enum EnState 
 {
-    EnS_Init,
-    EnS_WaitForStartSeq,
-    EnS_WaitForPlayNext,
-    EnS_WaitForPlayPrev,
-    EnS_Playing,
-    EnS_Idle
+    EnS_Init,            // 0
+    EnS_WaitForStartSeq, // 1
+    EnS_WaitForPlayNext, // 2
+    EnS_WaitForPlayPrev, // 3
+    EnS_Playing,         // 4
+    EnS_Idle             // 5
 };
 
 enum EnEvent 

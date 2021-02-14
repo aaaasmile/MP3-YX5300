@@ -30,6 +30,8 @@ String g_lastMp3Answ;
 
 void raise_event(EnEvent event)
 {
+  EnState oldState = g_state;
+
   switch (g_state)
   {
   case EnS_Init:
@@ -44,6 +46,7 @@ void raise_event(EnEvent event)
     }
     break;
 
+  case EnS_WaitForPlayPrev:
   case EnS_WaitForPlayNext:
   case EnS_WaitForStartSeq:
     switch (event)
@@ -65,8 +68,13 @@ void raise_event(EnEvent event)
       break;
     case EnEV_NextSong:
       g_state = EnS_WaitForPlayNext;
+      break;
     case EnEV_PrevSong:
       g_state = EnS_WaitForPlayPrev;
+      break;
+    case EnEV_FolderSeq:
+      g_state = EnS_WaitForStartSeq;
+      break;
     default:
       break;
     }
@@ -78,6 +86,13 @@ void raise_event(EnEvent event)
   default:
     break;
   }
+#ifdef DEBUG
+  Console.print(oldState);
+   Console.print(" old state, event rec ");
+  Console.print(event);
+  Console.print(" State now is ");
+  Console.println(g_state);
+#endif
 }
 
 String sbyte2hex(uint8_t b)
@@ -251,17 +266,17 @@ void loop()
 #endif
     song_ix = sequence.GetNext();
   }
-  if (g_state == EnS_WaitForPlayNext)
+  else if (g_state == EnS_WaitForPlayNext)
   {
 #ifdef DEBUG
     Console.println("Next song");
 #endif
     song_ix = sequence.GetNext();
   }
-  if (g_state == EnS_WaitForPlayPrev)
+  else if (g_state == EnS_WaitForPlayPrev)
   {
 #ifdef DEBUG
-    Console.println("Preious song");
+    Console.println("Previous song");
 #endif
     song_ix = sequence.GetPrev();
   }
