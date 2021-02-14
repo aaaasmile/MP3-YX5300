@@ -44,6 +44,7 @@ void raise_event(EnEvent event)
     }
     break;
 
+  case EnS_WaitForPlayNext:
   case EnS_WaitForStartSeq:
     switch (event)
     {
@@ -62,7 +63,8 @@ void raise_event(EnEvent event)
     case EnEV_SongTerminated:
       g_state = EnS_WaitForPlayNext;
       break;
-
+    case EnEV_NextSong:
+       g_state = EnS_WaitForPlayNext;
     default:
       break;
     }

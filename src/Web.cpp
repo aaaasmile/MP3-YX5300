@@ -11,6 +11,7 @@ int g_lastFolder = 0x2;
 int g_currSong = 0x01;
 int8_t g_maxSongs[3] = {0, 25, 14};
 
+extern void raise_event(EnEvent event);
 extern void sendCommand(byte command, byte dat1, byte dat2);
 
 WiFiServer server(80);

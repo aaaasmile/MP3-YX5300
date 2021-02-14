@@ -51,6 +51,7 @@ enum EnEvent
     EnEV_GenericResponse,
     EnEV_SongTerminated,
     EnEV_PlaysongRequest,
+    EnEV_NextSong,
 };
 
 
