@@ -37,5 +37,21 @@
 
 #define DEV_TF 0X02
 
+enum EnState 
+{
+    Init,
+    WaitForStartSeq,
+    WaitForPlayNext,
+    Playing,
+    Idle
+};
+
+enum EnEvent 
+{
+    GenericResponse,
+    SongTerminated,
+    PlaysongRequest,
+};
+
 
 #endif

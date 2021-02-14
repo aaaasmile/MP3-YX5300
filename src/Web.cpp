@@ -9,7 +9,7 @@ const char *password = "12345678"; // password length is important
 int g_currFolder = 0x1;
 int g_lastFolder = 0x2;
 int g_currSong = 0x01;
-static int8_t g_maxSongs[3] = {0, 25, 14};
+int8_t g_maxSongs[3] = {0, 25, 14};
 
 extern void sendCommand(byte command, byte dat1, byte dat2);
 

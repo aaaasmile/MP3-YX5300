@@ -1,11 +1,10 @@
 #include <Arduino.h>
-#include <ets_sys.h>
-#include "osapi.h"
 
 #include <ESP8266WiFi.h>
 #include <stdint.h>
 #include "web.h"
 #include "commands.h"
+#include "Sequence.h"
 
 #define DEBUG
 
@@ -21,12 +20,13 @@ SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
 static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
 extern int g_currFolder;
+extern int8_t g_maxSongs[];
+EnState g_state;
 
 MyWebServer apServer;
+Sequence sequence;
 
-int g_first = true;
 String g_lastMp3Answ;
-//#define DEBUG;
 
 String sbyte2hex(uint8_t b)
 {
@@ -104,16 +104,61 @@ String sanswer(void)
   return mp3answer;
 }
 
+void raise_event(EnEvent event)
+{
+  switch (g_state)
+  {
+  case Init:
+    switch (event)
+    {
+    case GenericResponse:
+      g_state = WaitForStartSeq;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case WaitForStartSeq:
+    switch (event)
+    {
+    case PlaysongRequest:
+      g_state = Playing;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case Playing:
+    switch (event)
+    {
+    case SongTerminated:
+      g_state = WaitForPlayNext;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case Idle:
+    break;
+
+  default:
+    break;
+  }
+}
+
 String decodeMP3Answer()
 {
   String decodedMP3Answer = "";
 
   decodedMP3Answer += sanswer();
-  unsigned long ll = micros();
-  
 #ifdef DEBUG
   Console.println("[ANT]" + decodedMP3Answer);
-  Console.println(ll);
 #endif
 
   switch (ansbuf[3])
@@ -158,34 +203,6 @@ String decodeMP3Answer()
   return decodedMP3Answer;
 }
 
-byte g_sample = 0;
-boolean g_sample_waiting = false;
-byte g_current_bit = 0;
-byte g_result = 0;
-
-// Rotate bits to the left
-// https://en.wikipedia.org/wiki/Circular_shift#Implementing_circular_shifts
-byte rotl(const byte value, int shift) {
-  if ((shift &= sizeof(value)*8 - 1) == 0)
-    return value;
-  return (value << shift) | (value >> (sizeof(value)*8 - shift));
-}
-
-void wdtSetup() {
-  // cli();
-  // MCUSR = 0;
-  
-  // /* Start timed sequence */
-  // WDTCSR |= _BV(WDCE) | _BV(WDE);
-
-  // /* Put WDT into interrupt mode */
-  // /* Set shortest prescaler(time-out) value = 2048 cycles (~16 ms) */
-  // WDTCSR = _BV(WDIE);
-
-  // sei();
-  //ESP.wdtFeed(); // reset watchdog
-}
-
 void setup()
 {
 #ifdef DEBUG
@@ -204,25 +221,10 @@ void setup()
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
   delay(500);
   apServer.Setup();
-  wdtSetup();
 }
 
 void loop()
 {
-  if (g_sample_waiting) {
-    g_sample_waiting = false;
-
-    g_result = rotl(g_result, 1); // Spread randomness around
-    g_result ^= g_sample; // XOR preserves randomness
-
-    g_current_bit++;
-    if (g_current_bit > 7)
-    {
-      g_current_bit = 0;
-      Console.println(g_result); // raw binary
-    }
-  }
-
   if (mp3.available())
   {
     g_lastMp3Answ = decodeMP3Answer();
@@ -232,20 +234,40 @@ void loop()
   }
   delay(100);
 
-  if (g_first)
+  bool play_next = false;
+  if (g_state == WaitForStartSeq)
   {
+    unsigned long ll = micros();
+    sequence.CreateSeq(ll, g_maxSongs[g_currFolder]);
 #ifdef DEBUG
-    Console.println("Wakeup");
+    Console.println("Time to start to play the folder");
+    Console.println(ll);
 #endif
+    play_next = true;
     //sendCommand(CMD_QUERY_FLDR_TRACKS, g_currFolder, 0x00); // works with antw 0x41?
     //sendCommand(CMD_QUERY_TOT_TRACKS, 0, 0);
     //sendCommand(CMD_QUERY_FLDR_COUNT, 0, 0);
     //sendCommand(CMD_QUERY_STATUS, 0, 0);
     //delay(500);
     //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder (OK)
-    sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, 0x04); // start playing the song with index
+  }
+  if (g_state == WaitForPlayNext)
+  {
+#ifdef DEBUG
+    Console.println("Next song");
+#endif
+    play_next = true;
+  }
+  if (play_next)
+  {
+    int next = sequence.GetNext();
+#ifdef DEBUG
+    Console.print("Play next ");
+    Console.println(next);
+#endif
+    sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, next); // start playing the song with index
     delay(100);
-    g_first = false;
+    raise_event(PlaysongRequest);
   }
 
   apServer.Update(g_lastMp3Answ);
