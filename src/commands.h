@@ -39,18 +39,18 @@
 
 enum EnState 
 {
-    Init,
-    WaitForStartSeq,
-    WaitForPlayNext,
-    Playing,
-    Idle
+    EnS_Init,
+    EnS_WaitForStartSeq,
+    EnS_WaitForPlayNext,
+    EnS_Playing,
+    EnS_Idle
 };
 
 enum EnEvent 
 {
-    GenericResponse,
-    SongTerminated,
-    PlaysongRequest,
+    EnEV_GenericResponse,
+    EnEV_SongTerminated,
+    EnEV_PlaysongRequest,
 };
 
 

@@ -1,14 +1,14 @@
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
-#include <stdint.h>
+#include <SoftwareSerial.h>
+
+#define DEBUG
+
 #include "web.h"
 #include "commands.h"
 #include "Sequence.h"
 
-#define DEBUG
-
-#include <SoftwareSerial.h>
 #define ESP8266_RX D5 // Rx should connect to TX of the Serial MP3 Player module
 #define ESP8266_TX D6 // Tx connect to RX of the module
 SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
@@ -21,12 +21,60 @@ static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
 extern int g_currFolder;
 extern int8_t g_maxSongs[];
-EnState g_state;
+EnState g_state = EnS_Init;
 
 MyWebServer apServer;
 Sequence sequence;
 
 String g_lastMp3Answ;
+
+void raise_event(EnEvent event)
+{
+  switch (g_state)
+  {
+  case EnS_Init:
+    switch (event)
+    {
+    case EnEV_GenericResponse:
+      g_state = EnS_WaitForStartSeq;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case EnS_WaitForStartSeq:
+    switch (event)
+    {
+    case EnEV_PlaysongRequest:
+      g_state = EnS_Playing;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case EnS_Playing:
+    switch (event)
+    {
+    case EnEV_SongTerminated:
+      g_state = EnS_WaitForPlayNext;
+      break;
+
+    default:
+      break;
+    }
+    break;
+
+  case EnS_Idle:
+    break;
+
+  default:
+    break;
+  }
+}
 
 String sbyte2hex(uint8_t b)
 {
@@ -104,54 +152,6 @@ String sanswer(void)
   return mp3answer;
 }
 
-void raise_event(EnEvent event)
-{
-  switch (g_state)
-  {
-  case Init:
-    switch (event)
-    {
-    case GenericResponse:
-      g_state = WaitForStartSeq;
-      break;
-
-    default:
-      break;
-    }
-    break;
-
-  case WaitForStartSeq:
-    switch (event)
-    {
-    case PlaysongRequest:
-      g_state = Playing;
-      break;
-
-    default:
-      break;
-    }
-    break;
-
-  case Playing:
-    switch (event)
-    {
-    case SongTerminated:
-      g_state = WaitForPlayNext;
-      break;
-
-    default:
-      break;
-    }
-    break;
-
-  case Idle:
-    break;
-
-  default:
-    break;
-  }
-}
-
 String decodeMP3Answer()
 {
   String decodedMP3Answer = "";
@@ -160,6 +160,7 @@ String decodeMP3Answer()
 #ifdef DEBUG
   Console.println("[ANT]" + decodedMP3Answer);
 #endif
+  raise_event(EnEV_GenericResponse);
 
   switch (ansbuf[3])
   {
@@ -169,6 +170,7 @@ String decodeMP3Answer()
 
   case 0x3D:
     decodedMP3Answer += " -> Completed play num " + String(ansbuf[6], DEC);
+    raise_event(EnEV_SongTerminated);
     break;
 
   case 0x40:
@@ -210,12 +212,8 @@ void setup()
   delay(10);
   Console.println("Setup serial communication, send seldev");
 #endif
-  //mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL);
   mp3.begin(9600);
-  //mp3.begin(9600, SerialConfig::SERIAL_8N1, SerialMode::SERIAL_FULL, D10, false);
   delay(10);
-  //sendCommand(CMD_RESET, 0, 0);
-  //delay(1000);
   // //send the command [Select device] first. Serial MP3 Player
   // // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
@@ -235,23 +233,18 @@ void loop()
   delay(100);
 
   bool play_next = false;
-  if (g_state == WaitForStartSeq)
+  if (g_state == EnS_WaitForStartSeq)
   {
     unsigned long ll = micros();
+    ll = ll * analogRead(0);
     sequence.CreateSeq(ll, g_maxSongs[g_currFolder]);
 #ifdef DEBUG
     Console.println("Time to start to play the folder");
     Console.println(ll);
 #endif
     play_next = true;
-    //sendCommand(CMD_QUERY_FLDR_TRACKS, g_currFolder, 0x00); // works with antw 0x41?
-    //sendCommand(CMD_QUERY_TOT_TRACKS, 0, 0);
-    //sendCommand(CMD_QUERY_FLDR_COUNT, 0, 0);
-    //sendCommand(CMD_QUERY_STATUS, 0, 0);
-    //delay(500);
-    //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00); // start playing the folder (OK)
   }
-  if (g_state == WaitForPlayNext)
+  if (g_state == EnS_WaitForPlayNext)
   {
 #ifdef DEBUG
     Console.println("Next song");
@@ -267,7 +260,7 @@ void loop()
 #endif
     sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, next); // start playing the song with index
     delay(100);
-    raise_event(PlaysongRequest);
+    raise_event(EnEV_PlaysongRequest);
   }
 
   apServer.Update(g_lastMp3Answ);
