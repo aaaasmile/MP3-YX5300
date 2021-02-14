@@ -6,6 +6,7 @@ class Sequence
 public:
     void CreateSeq(unsigned long seed, int num);
     int GetNext();
+    int GetPrev();
 
 private:
     int _next;

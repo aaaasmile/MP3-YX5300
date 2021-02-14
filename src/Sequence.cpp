@@ -66,3 +66,13 @@ int Sequence::GetNext()
     }
     return _seq[this->_next];
 }
+
+int Sequence::GetPrev()
+{
+    this->_next--;
+    if (this->_next < 0)
+    {
+        this->_next = this->_songs_count  - 1;
+    }
+    return _seq[this->_next];
+}

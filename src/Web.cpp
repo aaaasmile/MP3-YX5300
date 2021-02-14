@@ -117,7 +117,6 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
         sResponse += "<p>Prev Folder <a href=\"?cmd=FolderPrev\"><button>Prev Folder</button></a></p>";
         sResponse += "<br/>";
         sResponse += "<p><a href=\"?cmd=Rand\"><button>Rand</button></a>";
-        sResponse += "<a href=\"?cmd=List\"><button>List</button></a>";
         sResponse += "<a href=\"?cmd=VolumeUp\"><button>Up</button></a>";
         sResponse += "<a href=\"?cmd=VolumeDown\"><button>Down</button></a> </p>";
 
@@ -132,7 +131,8 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currSong = 1;
                 }
-                sendCommand(CMD_NEXT_SONG, 0x00, 0x00);
+                //sendCommand(CMD_NEXT_SONG, 0x00, 0x00);
+                raise_event(EnEV_NextSong);
             }
             else if (sCmd.indexOf("Prev") == 0)
             {
@@ -141,7 +141,8 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currSong = g_maxSongs[g_currFolder];
                 }
-                sendCommand(CMD_PREV_SONG, 0x00, 0x00);
+                //sendCommand(CMD_PREV_SONG, 0x00, 0x00);
+                raise_event(EnEV_PrevSong);
             }
             else if (sCmd.indexOf("FolderPrev") == 0)
             {
@@ -150,7 +151,8 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currFolder = g_lastFolder;
                 }
-                sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
+                //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
+                raise_event(EnEV_FolderSeq);
             }
             else if (sCmd.indexOf("FolderNext") == 0)
             {
@@ -159,22 +161,8 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currFolder = 1;
                 }
-                sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
-            }
-            else if (sCmd.indexOf("List") == 0)
-            {
-                for (size_t i = 0; i < 3; i++)
-                {
-                    g_currSong++;
-                    if (g_maxSongs[g_currFolder] > g_currSong)
-                    {
-                        g_currSong = 1;
-                    }
-                    sendCommand(CMD_SNG_CYCL_PLAY, g_currFolder, g_currSong);
-                    delay(500);
-                }
-
-                sendCommand(CMD_PLAY, 0x00, 0x00);
+                //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
+                raise_event(EnEV_FolderSeq);
             }
             else if (sCmd.indexOf("Rand") == 0)
             {

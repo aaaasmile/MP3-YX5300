@@ -64,7 +64,9 @@ void raise_event(EnEvent event)
       g_state = EnS_WaitForPlayNext;
       break;
     case EnEV_NextSong:
-       g_state = EnS_WaitForPlayNext;
+      g_state = EnS_WaitForPlayNext;
+    case EnEV_PrevSong:
+      g_state = EnS_WaitForPlayPrev;
     default:
       break;
     }
@@ -172,7 +174,10 @@ String decodeMP3Answer()
 
   case 0x3D:
     decodedMP3Answer += " -> Completed play num " + String(ansbuf[6], DEC);
-    raise_event(EnEV_SongTerminated);
+    if (g_lastMp3Answ != decodedMP3Answer)
+    {
+      raise_event(EnEV_SongTerminated);
+    }
     break;
 
   case 0x40:
@@ -181,6 +186,7 @@ String decodeMP3Answer()
 
   case 0x41:
     decodedMP3Answer += " -> Data recived correctly. ";
+    g_lastMp3Answ = "";
     break;
 
   case 0x42:
@@ -234,7 +240,7 @@ void loop()
   }
   delay(100);
 
-  bool play_next = false;
+  int song_ix = -1;
   if (g_state == EnS_WaitForStartSeq)
   {
     unsigned long ll = micros();
@@ -243,23 +249,29 @@ void loop()
 #ifdef DEBUG
     Console.println("Time to start to play the folder");
 #endif
-    play_next = true;
+    song_ix = sequence.GetNext();
   }
   if (g_state == EnS_WaitForPlayNext)
   {
 #ifdef DEBUG
     Console.println("Next song");
 #endif
-    play_next = true;
+    song_ix = sequence.GetNext();
   }
-  if (play_next)
+  if (g_state == EnS_WaitForPlayPrev)
   {
-    int next = sequence.GetNext();
 #ifdef DEBUG
-    Console.print("Play next ");
-    Console.println(next);
+    Console.println("Preious song");
 #endif
-    sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, next); // start playing the song with index
+    song_ix = sequence.GetPrev();
+  }
+  if (song_ix != -1)
+  {
+#ifdef DEBUG
+    Console.print("Play song with ix ");
+    Console.println(song_ix);
+#endif
+    sendCommand(CMD_PLAY_FOLDER_FILE, g_currFolder, song_ix); // start playing the song with index
     delay(100);
     raise_event(EnEV_PlaysongRequest);
   }

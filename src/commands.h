@@ -42,6 +42,7 @@ enum EnState
     EnS_Init,
     EnS_WaitForStartSeq,
     EnS_WaitForPlayNext,
+    EnS_WaitForPlayPrev,
     EnS_Playing,
     EnS_Idle
 };
@@ -52,6 +53,9 @@ enum EnEvent
     EnEV_SongTerminated,
     EnEV_PlaysongRequest,
     EnEV_NextSong,
+    EnEV_PrevSong,
+    EnEV_FolderSeq,
+
 };
 
 
