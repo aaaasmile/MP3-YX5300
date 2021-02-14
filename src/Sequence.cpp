@@ -42,7 +42,7 @@ void Sequence::CreateSeq(unsigned long seed, int num)
 
 #ifdef DEBUG
     Console.println("Sequence folder: ");
-    for (int i = 0; i < num - 1; i++)
+    for (int i = 0; i < num; i++)
     {
         if (i > 0)
         {
@@ -53,26 +53,31 @@ void Sequence::CreateSeq(unsigned long seed, int num)
     Console.println(" -> the sequence");
 #endif
 
-    this->_next = -1;
+    this->_currPos = -1;
     this->_songs_count = num;
 }
 
 int Sequence::GetNext()
 {
-    this->_next++;
-    if (this->_next >= this->_songs_count)
+    this->_currPos++;
+    if (this->_currPos >= this->_songs_count)
     {
-        this->_next = 0;
+        this->_currPos = 0;
     }
-    return _seq[this->_next];
+    return _seq[this->_currPos];
 }
 
 int Sequence::GetPrev()
 {
-    this->_next--;
-    if (this->_next < 0)
+    this->_currPos--;
+    if (this->_currPos < 0)
     {
-        this->_next = this->_songs_count  - 1;
+        this->_currPos = this->_songs_count  - 1;
     }
-    return _seq[this->_next];
+    return _seq[this->_currPos];
+}
+
+int Sequence::GetCurrSongIx()
+{
+    return _seq[this->_currPos];
 }

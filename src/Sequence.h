@@ -7,9 +7,10 @@ public:
     void CreateSeq(unsigned long seed, int num);
     int GetNext();
     int GetPrev();
+    int GetCurrSongIx();
 
 private:
-    int _next;
+    int _currPos;
     int _songs_count;
 };
 

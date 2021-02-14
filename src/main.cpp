@@ -28,6 +28,11 @@ Sequence sequence;
 
 String g_lastMp3Answ;
 
+int  get_curr_song()
+{
+  return sequence.GetCurrSongIx();
+}
+
 void raise_event(EnEvent event)
 {
   EnState oldState = g_state;
@@ -88,7 +93,7 @@ void raise_event(EnEvent event)
   }
 #ifdef DEBUG
   Console.print(oldState);
-   Console.print(" old state, event rec ");
+  Console.print(" old state, event rec ");
   Console.print(event);
   Console.print(" State now is ");
   Console.println(g_state);
@@ -237,8 +242,7 @@ void setup()
 #endif
   mp3.begin(9600);
   delay(10);
-  // //send the command [Select device] first. Serial MP3 Player
-  // // only supports micro sd card, so you should send “ 7E FF 06 09 00 00 02 EF ”.
+  //send the command [Select device] first. Serial MP3 Player
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
   delay(500);
   apServer.Setup();

@@ -8,10 +8,10 @@ const char *ssid = "MP-AP";
 const char *password = "12345678"; // password length is important
 int g_currFolder = 0x1;
 int g_lastFolder = 0x2;
-int g_currSong = 0x01;
 int8_t g_maxSongs[3] = {0, 25, 14};
 
 extern void raise_event(EnEvent event);
+extern int  get_curr_song();
 extern void sendCommand(byte command, byte dat1, byte dat2);
 
 WiFiServer server(80);
@@ -126,22 +126,10 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
 
             if (sCmd.indexOf("Next") == 0)
             {
-                g_currSong++;
-                if (g_currSong > g_maxSongs[g_currFolder])
-                {
-                    g_currSong = 1;
-                }
-                //sendCommand(CMD_NEXT_SONG, 0x00, 0x00);
                 raise_event(EnEV_NextSong);
             }
             else if (sCmd.indexOf("Prev") == 0)
             {
-                g_currSong--;
-                if (g_currSong < 1)
-                {
-                    g_currSong = g_maxSongs[g_currFolder];
-                }
-                //sendCommand(CMD_PREV_SONG, 0x00, 0x00);
                 raise_event(EnEV_PrevSong);
             }
             else if (sCmd.indexOf("FolderPrev") == 0)
@@ -151,7 +139,6 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currFolder = g_lastFolder;
                 }
-                //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
                 raise_event(EnEV_FolderSeq);
             }
             else if (sCmd.indexOf("FolderNext") == 0)
@@ -161,7 +148,6 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 {
                     g_currFolder = 1;
                 }
-                //sendCommand(CMD_FOLDER_CYCLE, g_currFolder, 0x00);
                 raise_event(EnEV_FolderSeq);
             }
             else if (sCmd.indexOf("Rand") == 0)
@@ -180,7 +166,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
         sResponse += "<p>I: " + lastMp3Answ + " - ";
         sResponse += g_currFolder;
         sResponse += " - ";
-        sResponse += g_currSong;
+        sResponse += get_curr_song();
         sResponse += "</p>";
 
         sResponse += "</body></html>";
