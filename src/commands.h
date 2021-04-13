@@ -55,6 +55,7 @@ enum EnEvent
     EnEV_NextSong,
     EnEV_PrevSong,
     EnEV_FolderSeq,
+    EnEV_Initialized
 
 };
 

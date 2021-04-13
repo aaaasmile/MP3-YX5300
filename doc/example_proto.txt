@@ -96,3 +96,31 @@ Abfrage der Gesamtanzahl der Ordner auf TF/U-Disk
 7E FF 06 4F 00 00 00 FE AC EF       7E FF 06 4F 00 00 00 EF Unterstützt nur TF-Karte und U-Disk 
 
 Übersetzt mit www.DeepL.com/Translator (kostenlose Version)
+
+
+3.2.2 Abfragebefehl
+Hier wird der Status des Chips und der zugehörigen Parameter abgefragt
+Ausführliche Erklärung des CMD-Befehls (Abfrage) Entsprechender Funktionsparameter (16 Bit)
+0x3C reserviert
+0x3D reserviert
+0x3E reserviert
+0x3F Initialisierungsparameter senden 0x1F (die unteren 5 Bits repräsentieren einen Ordner)
+0x40 Rückgabefehler, erneute Übertragung anfordern
+0x41 Antwort
+0x42 Den aktuellen Status abfragen, siehe 3.4.10 für Details
+0x43 Fragt das aktuelle Volume ab
+0x44 Den aktuell reservierten EQ abfragen
+0x45 Reserviert Diese Version behält diese Funktion bei
+0x46 Reserviert Diese Version behält diese Funktion bei
+0x47 Abfrage der Gesamtzahl der UDISK-Dateien Die Gesamtzahl der Dateien im Gerät
+0x48 Abfrage der Gesamtzahl der TF-Dateien Die Gesamtzahl der Dateien im Gerät
+0x49 Abfrage der Gesamtzahl der Dateien in FLASH Die Gesamtzahl der Dateien in 5 Ordnern
+0x4B Fragt die aktuelle Spur der physischen UDISK-Sequenz ab
+0x4C Fragt die aktuelle Spur der physischen TF-Sequenz ab
+0x4D Fragen Sie die aktuelle Spur von FLASH ab, geben Sie die Ordnernummer und den Spurzeiger zurück
+0x4E Fragen Sie die Tracks im angegebenen Ordner ab
+Gesamt Siehe 3.5.2 für Details
+0x4F Fragen Sie die Gesamtdatei des aktuellen Geräts ab
+Anzahl der Ordner Siehe 3.5.3 für Details
+0x61 Den aktuellen Ordnerzeiger abfragen Unterstützt nur FLASH
+
