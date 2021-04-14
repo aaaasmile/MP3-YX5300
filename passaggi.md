@@ -17,6 +17,10 @@ Il modulo usa una comunicazione seriale nel formato spiegato nella documentazion
 I pin addetti alla comunicazione seriale dell'ESP8266 sono D9 e D10, marcati come RX e TX.
 Il collegamento con YX5300 va fatto cross. Completa il collegamnto del modulo con Vcc e Gnd
 dell'ESP8266. In pratica, solo i primi 4 pin dell'ESP8266 sono collegati.
+Uso ESP8266 con i pin 
+D5 per RX  ------> TX di YX5300
+D6 per TX  <-----  RX di YX5300
+
 
 ## Problemi
 1)Non riesco a ricevere le risposte del player, sembrta che vengano mandate nel 
