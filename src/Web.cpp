@@ -3,13 +3,10 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include "commands.h"
+#include "synch-card-data.inc"
 
 const char *ssid = "MP-AP";
 const char *password = "12345678"; // password length is important
-int g_currFolder = 0x1; // F01
-int g_lastFolder = 0x3; // F03
-// Songs in F00, F01, F02, F03. F00 is not used
-int8_t g_maxSongs[4] = {0, 68, 14, 70}; // CHANGE these values if you change the content of the SD-Card
 
 extern void raise_event(EnEvent event);
 extern int  get_curr_song();
