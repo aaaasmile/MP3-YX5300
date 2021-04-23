@@ -8,7 +8,8 @@
 #include "commands.h"
 #include "web.h"
 
-const int buttonPrev = D1;  // Botton for previous song (D0 is what is written on the chip, 16 is the mapping to the GPIO)
+const int buttonPrev = D1;  // Botton for previous song (D0 is not working, stay always LOW)
+const int buttonNext = D2;
 
 #define ESP8266_RX D5  // Rx should connect to TX of the Serial MP3 Player module
 #define ESP8266_TX D6  // Tx connect to RX of the module
@@ -292,6 +293,8 @@ void setup() {
   Console.println("Setup serial communication, send seldev");
 #endif
   pinMode(buttonPrev, INPUT_PULLUP);
+  pinMode(buttonNext, INPUT_PULLUP);
+
   mp3.begin(9600);
   delay(10);
   //send the command [Select device] first. Serial MP3 Player
@@ -346,6 +349,15 @@ void loop() {
       Serial.println("Button pressed (PREV)");
 #endif
       raise_event(EnEV_PrevSong);
+      delay(300);
+    }
+  } else if (digitalRead(buttonNext) == LOW) {
+    if (!bt_pressed) {
+      bt_pressed = true;
+#ifdef DEBUG
+      Serial.println("Button pressed (NEXT)");
+#endif
+      raise_event(EnEV_NextSong);
       delay(300);
     }
   } else {
