@@ -8,8 +8,9 @@
 #include "commands.h"
 #include "web.h"
 
-const int buttonPrev = D1;  // Botton for previous song (D0 is not working, stay always LOW)
+const int buttonPrev = D4;  // Botton for previous song (D0 is not working, stay always LOW, D1 also with D2 and D3)
 const int buttonNext = D2;
+const int buttonNextFolder = D3;
 
 #define ESP8266_RX D5  // Rx should connect to TX of the Serial MP3 Player module
 #define ESP8266_TX D6  // Tx connect to RX of the module
@@ -23,6 +24,7 @@ static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
 extern int g_currFolder;
 extern int8_t g_maxSongs[];
+extern int g_lastFolder;
 EnState g_state = EnS_Init;
 
 MyWebServer apServer;
@@ -294,6 +296,7 @@ void setup() {
 #endif
   pinMode(buttonPrev, INPUT_PULLUP);
   pinMode(buttonNext, INPUT_PULLUP);
+  pinMode(buttonNextFolder, INPUT_PULLUP);
 
   mp3.begin(9600);
   delay(10);
@@ -360,7 +363,22 @@ void loop() {
       raise_event(EnEV_NextSong);
       delay(300);
     }
-  } else {
+  } 
+  else if (digitalRead(buttonNextFolder) == LOW) {
+    if (!bt_pressed) {
+      bt_pressed = true;
+#ifdef DEBUG
+      Serial.println("Button pressed (NEXT-FOLDER)");
+#endif
+      g_currFolder++;
+      if (g_currFolder > g_lastFolder) {
+        g_currFolder = 1;
+      }
+      raise_event(EnEV_FolderSeq);
+      delay(500);
+    }
+  } 
+  else {
     bt_pressed = false;
   }
   apServer.Update(g_lastMp3Answ);
