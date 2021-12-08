@@ -117,6 +117,7 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
         sResponse += "<p><a href=\"?cmd=Rand\"><button>Rand</button></a>";
         sResponse += "<a href=\"?cmd=VolumeUp\"><button>Up</button></a>";
         sResponse += "<a href=\"?cmd=VolumeDown\"><button>Down</button></a> </p>";
+        sResponse += "<a href=\"?cmd=\"><button>Clear Cmd</button></a> </p>";
 
         if (sCmd.length() > 0)
         {
@@ -161,9 +162,9 @@ void handleWebRequest(WiFiClient &client, String lastMp3Answ)
                 sendCommand(CMD_VOLUME_DOWN, 0x00, 0x00);
             }
         }
-        sResponse += "<p>I: " + lastMp3Answ + " - ";
+        sResponse += "<p>I: " + lastMp3Answ + " - F ";
         sResponse += g_currFolder;
-        sResponse += " - ";
+        sResponse += " - S ix ";
         sResponse += get_curr_song();
         sResponse += "</p>";
 
