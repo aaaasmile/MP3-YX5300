@@ -11,12 +11,14 @@ The ESP8266 can recive commands to chage the song using 3 buttons.
 
 This is the device that I have built used to listen music into my car:
 
-![Device](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0632.png?raw=true)
+![Device](https://github.com/aaaasmile/MP3-YX5300/blob/main/doc/IMG_0632.png?raw=true)
 
-![Device2](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0633.png?raw=true)
+![Device2](https://github.com/aaaasmile/MP3-YX5300/blob/main/doc/IMG_0633.png?raw=true)
 
 It is also possible to control the player using an integrated hot spot 
 that could be used with the IP address 192.168.4.1. In this case I can use the browser on my Iphone to control the device.
+
+This project is built using VSCode and PlatformIO
 
 ## Wire
     ESP8266
@@ -76,6 +78,16 @@ again. So I mixed it with an analog sensor value that should provide always a go
 Different folders have different music, so when I switch the folder I get something different. 
 I have coded the possibility to avoid a random sequence into the folder. This is because 
 for some music you want to hear in a known sequence. 
+
+## SD-Card structure
+Somethig like this
+
+    01\
+      001myb.mp3
+      002you.mp3
+    02\
+      001yyb.mp3
+      002yyu.mp3
 
 ## Drawbacks
 - The size of the device.
