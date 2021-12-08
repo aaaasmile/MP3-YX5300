@@ -4,7 +4,7 @@ The ESP8266 is a very cheap microcontroller and the YX5300 is a serial mp3 playe
 
 The ESP8266 is used to send serial AT commands to the YX5300.
 
-The ESP8266 can recive commands to chage the song using 3 buttons.
+The ESP8266 can receive commands to chage the song using 3 buttons.
 * Next song
 * Previous song
 * Next folder
