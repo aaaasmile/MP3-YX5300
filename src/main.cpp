@@ -15,14 +15,14 @@ const int buttonNextFolder = D3;
 
 #define ESP8266_RX D5  // Rx should connect to TX of the Serial MP3 Player module
 #define ESP8266_TX D6  // Tx connect to RX of the module
-SoftwareSerial mp3(ESP8266_RX, ESP8266_TX);
+SoftwareSerial g_SerialMp3(ESP8266_RX, ESP8266_TX);
 
 #ifdef DEBUG
 #define Console Serial  // command processor input/output stream
 #endif
 
-static int8_t Send_buf[8] = {0};
-static uint8_t ansbuf[10] = {0};
+static int8_t g_send_buf[8] = {0};
+static uint8_t g_ans_buf[10] = {0};
 extern int g_currFolder;
 extern int8_t g_maxSongs[];
 extern int8_t g_rndSongs[];
@@ -179,21 +179,21 @@ String sbyte2hex(uint8_t b) {
 
 void sendCommand(byte command, byte dat1, byte dat2) {
   delay(20);
-  Send_buf[0] = 0x7E;     //
-  Send_buf[1] = 0xFF;     //
-  Send_buf[2] = 0x06;     // Len
-  Send_buf[3] = command;  //
-  Send_buf[4] = 0x01;     // 0x00 NO, 0x01 feedback
-  Send_buf[5] = dat1;     // datah
-  Send_buf[6] = dat2;     // datal
-  Send_buf[7] = 0xEF;     //
+  g_send_buf[0] = 0x7E;     //
+  g_send_buf[1] = 0xFF;     //
+  g_send_buf[2] = 0x06;     // Len
+  g_send_buf[3] = command;  //
+  g_send_buf[4] = 0x01;     // 0x00 NO, 0x01 feedback
+  g_send_buf[5] = dat1;     // datah
+  g_send_buf[6] = dat2;     // datal
+  g_send_buf[7] = 0xEF;     //
 #ifdef DEBUG
   Console.print("Sending: ");
 #endif
   for (uint8_t i = 0; i < 8; i++) {
-    mp3.write(Send_buf[i]);
+    g_SerialMp3.write(g_send_buf[i]);
 #ifdef DEBUG
-    Console.print(sbyte2hex(Send_buf[i]));
+    Console.print(sbyte2hex(g_send_buf[i]));
 #endif
   }
 #ifdef DEBUG
@@ -201,20 +201,20 @@ void sendCommand(byte command, byte dat1, byte dat2) {
 #endif
 }
 
-String sanswer(void) {
+String serialmp3_answer(void) {
   uint8_t i = 0;
   uint8_t j = 0;
   String mp3answer = "";
 
   bool write = false;
   while (j < 3 && i < 10) {
-    while (mp3.available() && (i < 10)) {
-      uint8_t b = mp3.read();
+    while (g_SerialMp3.available() && (i < 10)) {
+      uint8_t b = g_SerialMp3.read();
       if (i == 0 && b == 0x7e) {
         write = true;
       }
       if (write) {
-        ansbuf[i] = b;
+        g_ans_buf[i] = b;
         i++;
         mp3answer += sbyte2hex(b);
       } else {
@@ -232,28 +232,27 @@ String sanswer(void) {
 }
 
 String decodeMP3Answer() {
-  String decodedMP3Answer = "";
-
-  decodedMP3Answer += sanswer();
+  String decodedMP3Answer;
+  decodedMP3Answer = serialmp3_answer();
 #ifdef DEBUG
   Console.println("[ANT]" + decodedMP3Answer);
 #endif
   raise_event(EnEV_GenericResponse);
 
-  switch (ansbuf[3]) {
+  switch (g_ans_buf[3]) {
     case 0x3A:
       decodedMP3Answer += " -> Memory card inserted.";
       break;
 
     case 0x3D:
-      decodedMP3Answer += " -> Completed play num " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Completed play num " + String(g_ans_buf[6], DEC);
       if (g_lastMp3Answ != decodedMP3Answer) {
         raise_event(EnEV_SongTerminated);
       }
       break;
 
     case 0x3F:
-      decodedMP3Answer += " -> Initialized " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Initialized " + String(g_ans_buf[6], DEC);
       if (g_lastMp3Answ != decodedMP3Answer) {
         raise_event(EnEV_Initialized);
       }
@@ -269,23 +268,23 @@ String decodeMP3Answer() {
       break;
 
     case 0x42:
-      decodedMP3Answer += " -> Status playing: " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Status playing: " + String(g_ans_buf[6], DEC);
       break;
 
     case 0x48:
-      decodedMP3Answer += " -> File count: " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> File count: " + String(g_ans_buf[6], DEC);
       break;
 
     case 0x4C:
-      decodedMP3Answer += " -> Playing: " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Playing: " + String(g_ans_buf[6], DEC);
       break;
 
     case 0x4E:
-      decodedMP3Answer += " -> Folder file count: " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Folder file count: " + String(g_ans_buf[6], DEC);
       break;
 
     case 0x4F:
-      decodedMP3Answer += " -> Folder count: " + String(ansbuf[6], DEC);
+      decodedMP3Answer += " -> Folder count: " + String(g_ans_buf[6], DEC);
       break;
   }
 
@@ -302,7 +301,7 @@ void setup() {
   pinMode(buttonNext, INPUT_PULLUP);
   pinMode(buttonNextFolder, INPUT_PULLUP);
 
-  mp3.begin(9600);
+  g_SerialMp3.begin(9600);
   delay(10);
   //send the command [Select device] first. Serial MP3 Player
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
@@ -314,7 +313,8 @@ void setup() {
 
 void loop() {
   bool bt_pressed = false;
-  if (mp3.available()) {
+  
+  if (g_SerialMp3.available()) {
     g_lastMp3Answ = decodeMP3Answer();
 #ifdef DEBUG
     Console.println(g_lastMp3Answ);
@@ -323,26 +323,41 @@ void loop() {
   delay(100);
 
   int song_ix = -1;
-  if (g_state == EnS_WaitForStartSeq) {
-    unsigned long ll = micros();
-    ll = ll * analogRead(0);
-    sequence.CreateSeq(ll, g_maxSongs[g_currFolder], g_rndSongs[g_currFolder]);
+  unsigned long ll = 0;
+  switch (g_state) {
+    case EnS_WaitForStartSeq:
+      ll = micros();
+      ll = ll * analogRead(0);
+      sequence.CreateSeq(ll, g_maxSongs[g_currFolder], g_rndSongs[g_currFolder]);
 #ifdef DEBUG
-    Console.println("Time to start to play the folder");
+      Console.println("Time to start to play the folder");
 #endif
-    song_ix = sequence.GetNext();
-  } else if (g_state == EnS_WaitForPlayNext) {
+      song_ix = sequence.GetNext();
+      break;
+
+    case EnS_WaitForPlayNext:
+      song_ix = sequence.GetNext();
 #ifdef DEBUG
-    Console.println("Next song");
+      Console.println("Next song");
 #endif
-    song_ix = sequence.GetNext();
-  } else if (g_state == EnS_WaitForPlayPrev) {
+      break;
+
+    case EnS_WaitForPlayPrev:
+      song_ix = sequence.GetPrev();
 #ifdef DEBUG
-    Console.println("Previous song");
+      Console.println("Previous song");
 #endif
-    song_ix = sequence.GetPrev();
+      break;
+
+    case EnS_Playing:
+      song_ix = -1;
+      break;
+
+    default:
+      break;
   }
-  if (song_ix != -1) {
+
+  if (song_ix > 0) {
 #ifdef DEBUG
     Console.print("Play song with ix ");
     Console.println(song_ix);
