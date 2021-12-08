@@ -4,7 +4,7 @@
 class Sequence
 {
 public:
-    void CreateSeq(unsigned long seed, int num);
+    void CreateSeq(unsigned long seed, int num, int rndLevel);
     int GetNext();
     int GetPrev();
     int GetCurrSongIx();

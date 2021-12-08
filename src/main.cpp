@@ -2,7 +2,8 @@
 #include <ESP8266WiFi.h>
 #include <SoftwareSerial.h>
 
-#define DEBUG
+//#define DEBUG // for console serial information
+//#define USE_WIFI_SERVER // to enable wifi hotspot for control (interference in sound output in the car?)
 
 #include "Sequence.h"
 #include "commands.h"
@@ -24,6 +25,7 @@ static int8_t Send_buf[8] = {0};
 static uint8_t ansbuf[10] = {0};
 extern int g_currFolder;
 extern int8_t g_maxSongs[];
+extern int8_t g_rndSongs[];
 extern int g_lastFolder;
 EnState g_state = EnS_Init;
 
@@ -90,7 +92,9 @@ String state_to_string(EnState state) {
 }
 
 void raise_event(EnEvent event) {
+#ifdef DEBUG
   EnState oldState = g_state;
+#endif
 
   switch (g_state) {
     case EnS_Init:
@@ -303,7 +307,9 @@ void setup() {
   //send the command [Select device] first. Serial MP3 Player
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
   delay(500);
+#ifdef USE_WIFI_SERVER
   apServer.Setup();
+#endif
 }
 
 void loop() {
@@ -320,7 +326,7 @@ void loop() {
   if (g_state == EnS_WaitForStartSeq) {
     unsigned long ll = micros();
     ll = ll * analogRead(0);
-    sequence.CreateSeq(ll, g_maxSongs[g_currFolder]);
+    sequence.CreateSeq(ll, g_maxSongs[g_currFolder], g_rndSongs[g_currFolder]);
 #ifdef DEBUG
     Console.println("Time to start to play the folder");
 #endif
@@ -363,8 +369,7 @@ void loop() {
       raise_event(EnEV_NextSong);
       delay(300);
     }
-  } 
-  else if (digitalRead(buttonNextFolder) == LOW) {
+  } else if (digitalRead(buttonNextFolder) == LOW) {
     if (!bt_pressed) {
       bt_pressed = true;
 #ifdef DEBUG
@@ -377,9 +382,10 @@ void loop() {
       raise_event(EnEV_FolderSeq);
       delay(500);
     }
-  } 
-  else {
+  } else {
     bt_pressed = false;
   }
+#ifdef USE_WIFI_SERVER
   apServer.Update(g_lastMp3Answ);
+#endif
 }
