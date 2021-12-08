@@ -52,7 +52,7 @@ another project to rename my mp3 files. See the https://github.com/aaaasmile/ren
 ## Motivation
 At first there are no clear reason why I should build such a fat mp3 player when an Ipod
 is ready to use, supported by my car and much more smaller.
-For a ESP bebinner like me, building and programming the ESP8266 is funny und much more rewarding that buying an ipod
+For an ESP beginner like me, building and programming the ESP8266 is funny und much more rewarding that buying an ipod
 and playing around with itunes. 
 
 But there are other reasons: 
