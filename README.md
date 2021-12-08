@@ -1,5 +1,7 @@
 # MP3-YX5300
-This is a Mp3 player build on ESP8266 and the mp3 player YX5300 with an integrated SD card slot.
+This is a Mp3 player build on ESP8266 and the mp3 player YX5300.
+The ESP8266 is a very cheap microcontroller and the YX5300 is a serial mp3 player with an integrated Sd card slot.
+
 The ESP8266 is used to send serial AT commands to the YX5300.
 
 The ESP8266 can recive commands to chage the song using 3 buttons.
@@ -12,7 +14,7 @@ This is the device that I have built used to listen music into my car:
 ![alt text](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0632.JPG?raw=true)
 
 It is also possible to control the player using an integrated hot spot 
-that could be used with the IP address 192.168.4.1. 
+that could be used with the IP address 192.168.4.1. In this case I can use the browser on my Iphone to control the device.
 
 ## Wire
     ESP8266
