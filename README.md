@@ -11,7 +11,9 @@ The ESP8266 can recive commands to chage the song using 3 buttons.
 
 This is the device that I have built used to listen music into my car:
 
-![alt text](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0632.JPG?raw=true)
+![Device](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0632.JPG?raw=true)
+
+![Device2](https://github.com/aaaasmile/MP3-YX5300/blob/master/doc/IMG_0633.JPG?raw=true)
 
 It is also possible to control the player using an integrated hot spot 
 that could be used with the IP address 192.168.4.1. In this case I can use the browser on my Iphone to control the device.
