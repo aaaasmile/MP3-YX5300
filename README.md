@@ -92,7 +92,6 @@ Somethig like this
 ## Drawbacks
 - The size of the device.
 - Some time I hear noise, probably is the wiring disturbing the music out-line. 
-The Wifi is not enabled as default for this reason.
 - Preparing the SD-Card needs much more time that with itunes and ipod. 
 - When I stop the car for a break, the song sequence is recreated again. 
 Probably restoring the seqence from the Eprom could be an improvement. In this case a sequence reset somehow is

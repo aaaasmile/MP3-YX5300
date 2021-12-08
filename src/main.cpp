@@ -3,7 +3,7 @@
 #include <SoftwareSerial.h>
 
 //#define DEBUG // for console serial information
-//#define USE_WIFI_SERVER // to enable wifi hotspot for control (interference in sound output in the car?)
+#define USE_WIFI_SERVER // to enable wifi hotspot for control
 
 #include "Sequence.h"
 #include "commands.h"
@@ -313,7 +313,7 @@ void setup() {
 
 void loop() {
   bool bt_pressed = false;
-  
+
   if (g_SerialMp3.available()) {
     g_lastMp3Answ = decodeMP3Answer();
 #ifdef DEBUG
