@@ -67,7 +67,7 @@ good as the Line-In in my car.
 ## Random sequence
 On the Ipod the random song is choosed within a list of all songs. If you are putting a lot of
 songs in your ipod, chances are that you mixing different music genre. 
-There is also no limit how many time the same song is played. You can hear the same song 4 times and one another song never.
+There is also no limit how many time the same song is played. You can hear the same song 4 times and another one never.
 This is because the random is done every time on the full list.
 
 In MP3-YX5300 I use different folders. On the first folder, the default when the device is pluggen-in into my car,
