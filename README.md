@@ -59,7 +59,7 @@ But there are other reasons:
 - the random playing list on my car
 - sound quality
 
-I have setted up an ipod with hundred of songs, but very often when I plug the device 
+I have set up an ipod with hundred of songs, but very often when I plug the device 
 into my car the random song sequence is the same as the old one. 
 Hearing always the same songs is very annoying and also the sound quality via Ipod-USB is not so
 good as the Line-In in my car. 
