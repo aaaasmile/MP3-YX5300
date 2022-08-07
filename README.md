@@ -49,6 +49,11 @@ Mp3 files on the sd card should be named as:
 and so on. Usually you do not have mp3 files with such names, so I have created
 another project to rename my mp3 files. See the https://github.com/aaaasmile/rename-file.
 
+## Update the SD Card
+Use rename-file tool for preparing file names. Then add files into the sd card, for example a new folder.
+Then change information inside the file synch-card-data.inc.
+
+
 ## Motivation
 At first there are no clear reason why I should build such a fat mp3 player when an Ipod
 is ready to use, supported by my car and much more smaller.

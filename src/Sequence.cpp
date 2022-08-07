@@ -25,7 +25,7 @@ void Sequence::CreateSeq(unsigned long seed, int num, int rndLevel) {
     randomSeed(seed);
 
     //Knuth-Fisher-Yates shuffle algorithm.
-    // While there remain elements to shuffle…
+    // While there remain elements to shuffle
     int m = num;
     int i, t;
     while (m) {
